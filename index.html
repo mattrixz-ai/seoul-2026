@@ -257,6 +257,7 @@ document.getElementById('main').addEventListener('click',e=>{
 
 function tick(){const n=seoulNow();document.getElementById('clock').innerHTML=`首爾時間 <b>${n.hm}</b>`}
 window.addEventListener('hashchange',()=>{route();window.scrollTo({top:0})});
+if(location.hash){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}
 tick();route();
 setInterval(()=>{tick();const h=location.hash.slice(1)||todayId();if(h&&h===todayId())route()},60000);
 </script>
