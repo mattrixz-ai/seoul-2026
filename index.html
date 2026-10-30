@@ -47,7 +47,7 @@ nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--
 .dayhead span{color:var(--muted);font-size:14px}
 .sum{color:var(--muted);font-size:14px;margin:0 0 14px}
 .tl{list-style:none;margin:0;padding:0;position:relative}
-.tl::before{content:"";position:absolute;left:52px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tl::before{content:"";position:absolute;left:60px;top:8px;bottom:8px;width:2px;background:var(--line)}
 .it{display:grid;grid-template-columns:44px 18px minmax(0,1fr);gap:0 8px;padding:10px 0}
 .time{font-family:var(--mono);font-size:14px;color:var(--muted);padding-top:2px;font-variant-numeric:tabular-nums}
 .dot{width:12px;height:12px;border-radius:50%;background:var(--card);border:2px solid var(--faint);margin:6px 0 0 3px;position:relative;z-index:1}
@@ -77,6 +77,19 @@ nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--
 .optlabel{font-size:12px;color:var(--muted);margin-top:8px}
 .it.now .dot{border-color:var(--gold);background:var(--gold)}
 .it.now .time{color:var(--gold)}
+.tip{margin-top:6px;font-size:13px;color:var(--teal);background:var(--teal-bg);border-radius:8px;padding:6px 9px;overflow-wrap:anywhere}
+.tip b,.warn b{font-weight:600;margin-right:4px}
+.warn{margin-top:6px;font-size:13px;color:var(--red);background:var(--red-bg);border-radius:8px;padding:6px 9px;overflow-wrap:anywhere}
+.it.sug .dot{border-style:dashed;border-color:var(--teal)}
+.sugtag{display:inline-block;font-size:12px;color:var(--teal);border:1px dashed var(--teal);border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.drop{margin:18px 0 0;padding:12px 14px;border:1px dashed var(--line);border-radius:12px;font-size:14px}
+.drop h3{margin:0 0 6px;font-size:14px;color:var(--muted);font-weight:600}
+.drop ul{margin:0;padding-left:18px;color:var(--muted)}
+.drop li{margin:3px 0}
+.drop s{color:var(--faint)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
 .nowpill{display:inline-block;font-size:12px;color:var(--gold);background:var(--gold-bg);border-radius:6px;padding:2px 7px;margin-top:6px}
 .it.past .title,.it.past .time{color:var(--faint)}
 .ov{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}
@@ -95,7 +108,8 @@ footer{margin-top:28px;color:var(--faint);font-size:12px}
 <div class="wrap">
   <header>
     <h1>首爾 2026</h1>
-    <p>11 月 1 日 – 5 日 · 五天四夜</p>
+    <p>11 月 1 日 – 5 日 · 五天四夜 · 整理建議版</p>
+    <div class="legend"><span><i style="background:var(--teal-bg);border:1px solid var(--teal)"></i>建議調整</span><span><i style="border:1px dashed var(--teal)"></i>建議新增</span></div>
     <div class="clock" id="clock">首爾時間 --:--</div>
   </header>
   <nav aria-label="選擇日期"><div class="days" id="days"></div></nav>
@@ -107,63 +121,64 @@ footer{margin-top:28px;color:var(--faint);font-size:12px}
 const PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
 const TAG={food:'食',go:'遊',stay:'住',shop:'逛'};
 const DAYS=[
- {id:'d1',date:1,wd:'日',sum:'望遠市場 · 入住 · 晚餐',items:[
-  {t:'10:00',k:'food',title:'望遠市場',note:'餃子 / 辣椒釀肉 / bagel?',q:'망원시장'},
-  {t:'11:30',k:'food',title:'Seodamhoon 韓式中菜',url:'https://naver.me/5apD0wQW'},
-  {t:'15:00',k:'stay',title:'Check in'},
-  {t:'18:00',k:'food',title:'晚餐',label:'晚餐選擇',opts:[
+ {id:'d1',date:1,wd:'日',sum:'望遠市場 · 弘大入住 · 輕鬆晚餐',items:[
+  {t:'10:00',k:'food',title:'望遠市場',note:'餃子 / 辣椒釀肉 / bagel',q:'망원시장',tip:'當早午餐試吃就好，留肚給午餐。'},
+  {t:'12:00',k:'food',title:'Seodamhoon 韓式中菜',url:'https://naver.me/5apD0wQW',tip:'由 11:30 推到 12:00，和市場小食隔開一點。'},
+  {t:'13:30',k:'stay',title:'先回酒店寄存行李、休息',sug:true,tip:'午後空檔先放下行李，長輩可以早點坐下休息。'},
+  {t:'15:00',k:'stay',title:'Check in',note:'休息到晚餐'},
+  {t:'18:00',k:'food',title:'晚餐',label:'晚餐選擇',tip:'四間都是連鎖店，弘大一帶都有分店，可以臨場決定。',opts:[
     {n:'Yeoppgi teokbokki 年糕',q:'엽기떡볶이'},{n:'No more pizza',q:'노모어피자'},
     {n:'Purada chicken',q:'푸라닭'},{n:'60 chicken',q:'60계치킨'}]}
- ]},
- {id:'d2',date:2,wd:'一',sum:'現代百貨 · 汝矣島漢江野餐',items:[
-  {t:'09:00',k:'food',title:'Jo&Dawson 早餐',note:'french toast，或…',q:'Jo&Dawson'},
-  {t:'11:00',k:'food',title:'Eel'},
-  {t:'12:30',k:'go',title:'Olympic Park',alt:true,q:'올림픽공원'},
-  {t:'13:30',k:'shop',title:'Hyundai department store 現代百貨公司',note:'Foodcourt',q:'더현대 서울',spots:[
+ ],dropped:[]},
+ {id:'d2',date:2,wd:'一',sum:'現代百貨 · 漢江野餐 · Ipark Mall',items:[
+  {t:'10:00',k:'food',title:'早午餐',label:'二選一',tip:'原本 09:00 早餐、11:00 鰻魚太貼近，合併成一餐。',opts:[
+    {n:'Jo&Dawson french toast',q:'Jo&Dawson'},{n:'Eel 鰻魚',q:'장어'}]},
+  {t:'12:30',k:'shop',title:'The Hyundai Seoul 現代百貨公司',note:'Foodcourt 午餐',q:'더현대 서울',tip:'在這裡買 bagel 和麵包，帶去漢江野餐。',spots:[
     {n:'London Bagel Museum',q:'London Bagel Museum'},{n:'Artist Bakery',q:'아티스트베이커리'}]},
-  {t:'14:00',k:'go',title:'汝矣島漢江公園野餐',note:'Picnic + 單車',q:'여의도한강공원'},
-  {t:'16:30',k:'move',title:'往明洞 或 Ipark Mall（有 Emart）'},
-  {t:'18:00',k:'food',title:'Daylit 韓式 fusion',note:'晚餐',q:'daylit'},
-  {t:'19:00',k:'shop',title:'Lotte zmart',note:'晚餐前或後',q:'롯데마트'}
- ]},
+  {t:'14:00',k:'go',title:'汝矣島漢江公園野餐',note:'Picnic + 單車',q:'여의도한강공원',tip:'由百貨公司步行可到。單車可選做，長輩坐著休息也很好。'},
+  {t:'15:30',k:'stay',title:'回酒店休息'},
+  {t:'17:00',k:'shop',title:'Ipark Mall',note:'有 Emart 超市',q:'아이파크몰 용산',tip:'在龍山站旁邊，Emart 在商場內，買手信和零食一次搞定。'},
+  {t:'18:30',k:'food',title:'Daylit 韓式 fusion',note:'晚餐',q:'daylit',tip:'推遲到逛完 Ipark Mall 之後。'}
+ ],dropped:[]},
  {id:'d3',date:3,wd:'二',sum:'首爾林秋景 · 聖水散步',items:[
-  {t:'09:00',k:'food',title:'Breakfast'},
-  {t:'10:30',k:'move',title:'往聖水 / 首爾林'},
-  {t:'11:30',k:'food',title:'午餐',label:'午餐選擇',opts:[{n:'Manbae 蒸豬肉',q:'manbae 성수'}]},
-  {t:'13:00',k:'go',title:'Snoopy forest + 首爾林',note:'Autumn walk walk · 累了就去 cafe',q:'서울숲'},
-  {t:'15:30',k:'go',title:'聖水 walk walk',q:'성수동',spots:[
+  {t:'09:00',k:'food',title:'早餐',note:'酒店附近隨意'},
+  {t:'10:30',k:'move',title:'往首爾林 / 聖水'},
+  {t:'11:30',k:'food',title:'Manbae 蒸豬肉',note:'午餐',q:'manbae 성수',tip:'原本寫「choices」但只有一間，當作已定。'},
+  {t:'13:00',k:'go',title:'Snoopy forest + 首爾林',note:'Autumn walk',q:'서울숲',tip:'首爾林大多是平路，適合慢慢走。'},
+  {t:'14:30',k:'food',title:'Cafe 休息',sug:true,tip:'原本「累了就去 cafe」，改成固定的休息時段。'},
+  {t:'15:30',k:'go',title:'聖水散步',q:'성수동',tip:'四間都是麵包甜品，揀一兩間就夠，留肚吃晚餐。',spots:[
     {n:'Standard bread',q:'스탠다드브레드 성수'},{n:'Eteure salt bread',q:'eteure'},
     {n:'Mamam gelato',q:'mamam gelato'},{n:"Kim's deli",q:"Kim's deli 성수"}]},
   {t:'17:30',k:'food',title:'Jojo kalguksu 蜆肉刀削麵',note:'晚餐',q:'조조칼국수'}
- ]},
+ ],dropped:[]},
  {id:'d4',date:4,wd:'三',sum:'安國 · 景福宮 · 廣藏市場',items:[
-  {t:'09:00',k:'food',title:'Isaac toast 早餐?',q:'이삭토스트'},
+  {t:'09:00',k:'food',title:'Isaac toast 早餐',q:'이삭토스트'},
   {t:'10:00',k:'move',title:'往安國'},
-  {t:'11:00',k:'food',title:'午餐',label:'午餐選擇',opts:[
+  {t:'10:45',k:'food',title:'午餐',label:'午餐選擇',tip:'提早到 11:00 前。土俗村經常大排長龍，早到排隊較短；土俗村近景福宮，Koong 在仁寺洞。',opts:[
     {n:'土俗村 人蔘雞',url:'https://naver.me/FW6hFEuf'},{n:'Koong 米芝蓮餃子',url:'https://naver.me/5OQyTZvB'},
     {n:'Moguok 人蔘雞',q:'moguok'},{n:'Shilla jemyeon',q:'shilla jemyeon'}]},
-  {t:'12:30',k:'go',title:'景福宮附近行行',q:'경복궁',spots:[
-    {n:'北村韓屋？',q:'북촌한옥마을'},{n:'Garlic boy?',q:'garlic boy'}]},
-  {t:'14:00',k:'move',title:'往廣藏市場',q:'광장시장'},
-  {t:'14:30',k:'go',title:'溪邊 / 明洞',alt:true,q:'청계천'},
-  {t:'16:00',k:'move',title:'返弘大'},
-  {t:'17:30',k:'food',title:'Mogumong 燒肉',note:'晚餐',q:'mogumong'}
- ]},
- {id:'d5',date:5,wd:'四',sum:'退房 · 寄存行李 · 機場',items:[
-  {t:'09:30',k:'food',title:'Jo&Dawson french toast',q:'Jo&Dawson'},
-  {t:'11:00',k:'stay',title:'Check out'},
+  {t:'12:15',k:'go',title:'景福宮附近行行',q:'경복궁',tip:'景福宮星期二休息，星期三去剛好。北村斜路和樓梯多，長輩可只走平路一段；北村部分範圍下午 5 點後不准遊客進入。',spots:[
+    {n:'北村韓屋',q:'북촌한옥마을'},{n:'Garlic boy',q:'garlic boy'}]},
+  {t:'14:30',k:'food',title:'廣藏市場',note:'下午茶小食',q:'광장시장',tip:'合併原本「往廣藏市場」一行。'},
+  {t:'15:30',k:'go',title:'清溪川散步 或 明洞',alt:true,q:'청계천',tip:'廣藏市場旁邊就是清溪川，順路；明洞要另外搭車。'},
+  {t:'16:30',k:'move',title:'返弘大休息'},
+  {t:'18:00',k:'food',title:'Mogumong 燒肉',note:'晚餐',q:'mogumong',tip:'由 17:30 推到 18:00，先休息一下。'}
+ ],dropped:[]},
+ {id:'d5',date:5,wd:'四',sum:'退房 · 午餐 · 機場',items:[
+  {t:'09:30',k:'food',title:'Jo&Dawson french toast',q:'Jo&Dawson',tip:'如果 11/2 已經吃過，可以換一間。'},
+  {t:'11:00',k:'stay',title:'Check out + 寄存行李',tip:'既然 16:00 由酒店出發去機場，行李寄存在酒店前台最方便，不用另外找 Zim Carry。'},
   {t:'11:30',k:'food',title:'午餐',label:'午餐選擇',opts:[{n:'五香豬手',q:'오향족발'},{n:'Myth',q:'myth 족발'}]},
-  {t:'14:30',k:'stay',title:'Zim Carry 寄存行李',q:'짐캐리'},
-  {t:'15:00',k:'go',title:'Inspire?',q:'인스파이어'},
+  {t:'13:00',k:'go',title:'酒店附近 cafe / 散步',sug:true,tip:'午餐後不走遠，在酒店附近慢慢逛，15:30 前回酒店取行李。'},
+  {t:'15:30',k:'stay',title:'回酒店取行李'},
   {t:'16:00',k:'stay',title:'酒店接送往機場',note:'Airport pick up from hotel'}
- ]}
+ ],dropped:[]}
 ];
 const mapURL=o=>o.url||(o.q?'https://map.naver.com/p/search/'+encodeURIComponent(o.q):null);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const mapBtn=o=>{const u=mapURL(o);return u?`<a class="map" href="${u}" target="_blank" rel="noopener" aria-label="在 Naver Map 開啟 ${esc(o.n||o.title)}">${PIN}地圖</a>`:''};
 
-let picks={};try{picks=JSON.parse(localStorage.getItem('seoul26-picks')||'{}')}catch(e){}
-const savePicks=()=>{try{localStorage.setItem('seoul26-picks',JSON.stringify(picks))}catch(e){}};
+let picks={};try{picks=JSON.parse(localStorage.getItem('seoul26-picks-v2')||'{}')}catch(e){}
+const savePicks=()=>{try{localStorage.setItem('seoul26-picks-v2',JSON.stringify(picks))}catch(e){}};
 
 function seoulNow(){
   const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
@@ -180,11 +195,13 @@ function renderNav(sel){
 }
 
 function itemHTML(day,it,i,state){
-  const cls=`it k-${it.k} ${state}`;
+  const cls=`it k-${it.k} ${state} ${it.sug?'sug':''}`;
   let h=`<li class="${cls}"><div class="time">${it.t}</div><div class="dot"></div><div class="body"><div class="row">`;
   if(it.k!=='move')h+=`<span class="tag">${TAG[it.k]}</span>`;
-  h+=`<div class="title">${it.alt?'<span class="alt">或</span>':''}${esc(it.title)}</div>${mapBtn(it)}</div>`;
+  h+=`<div class="title">${it.sug?'<span class="sugtag">建議新增</span>':''}${it.alt?'<span class="alt">或</span>':''}${esc(it.title)}</div>${mapBtn(it)}</div>`;
   if(it.note)h+=`<div class="note">${esc(it.note)}</div>`;
+  if(it.tip)h+=`<div class="tip"><b>建議</b>${esc(it.tip)}</div>`;
+  if(it.warn)h+=`<div class="warn"><b>待確認</b>${esc(it.warn)}</div>`;
   if(it.opts){
     const key=day.id+'-'+i, chosen=picks[key];
     h+=`<div class="optlabel">${esc(it.label)}${it.opts.length>1?' · 點一下選定':''}</div><div class="opts">`;
@@ -209,7 +226,8 @@ function renderDay(id){
   const tripPast=n.y===2026&&n.m===11&&n.d>day.date;
   document.getElementById('main').innerHTML=
     `<div class="dayhead"><h2>11 月 ${day.date} 日</h2><span>星期${day.wd}${isToday?' · 今天':''}</span></div><p class="sum">${esc(day.sum)}</p>`+
-    `<ol class="tl">${day.items.map((it,i)=>itemHTML(day,it,i,tripPast?'past':(isToday?(i===nowIdx?'now':(i<nowIdx?'past':'')):''))).join('')}</ol>`;
+    `<ol class="tl">${day.items.map((it,i)=>itemHTML(day,it,i,tripPast?'past':(isToday?(i===nowIdx?'now':(i<nowIdx?'past':'')):''))).join('')}</ol>`+
+    (day.dropped&&day.dropped.length?`<div class="drop"><h3>建議刪除</h3><ul>${day.dropped.map(x=>`<li><s>${esc(x.n)}</s>：${esc(x.why)}</li>`).join('')}</ul></div>`:'');
   const nowEl=document.querySelector('.it.now');
   if(nowEl&&!renderDay.scrolled){renderDay.scrolled=true;setTimeout(()=>nowEl.scrollIntoView({block:'center',behavior:'smooth'}),150)}
 }
@@ -218,8 +236,8 @@ function renderOverview(){
   const tid=todayId();
   document.getElementById('main').innerHTML=`<div class="dayhead"><h2>五天總覽</h2></div><ul class="ov">`+
     DAYS.map(d=>{
-      const food=d.items.filter(i=>i.k==='food').length;
-      return `<li><a href="#${d.id}" class="${tid===d.id?'today':''}"><span class="d">11/${d.date}<span class="w">星期${d.wd}${tid===d.id?' · 今天':''}</span></span><span style="min-width:0"><div class="s">${esc(d.sum)}</div><div class="m">${d.items.length} 個行程 · ${food} 餐</div></span></a></li>`;
+      const food=d.items.filter(i=>i.k==='food').length, warns=d.items.filter(i=>i.warn).length;
+      return `<li><a href="#${d.id}" class="${tid===d.id?'today':''}"><span class="d">11/${d.date}<span class="w">星期${d.wd}${tid===d.id?' · 今天':''}</span></span><span style="min-width:0"><div class="s">${esc(d.sum)}</div><div class="m">${d.items.length} 個行程 · ${food} 餐${warns?` · <span style="color:var(--red)">${warns} 項待確認</span>`:''}</div></span></a></li>`;
     }).join('')+'</ul>';
 }
 
